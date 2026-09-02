@@ -1,44 +1,13 @@
 class Solution {
 public:
 
-    bool isSafe(vector<string>& board, int row, int col, int n) {
-
-        // Check column
-        for(int i = 0; i < row; i++) {
-            if(board[i][col] == 'Q')
-                return false;
-        }
-
-        // Check upper-left diagonal
-        int i = row - 1;
-        int j = col - 1;
-
-        while(i >= 0 && j >= 0) {
-            if(board[i][j] == 'Q')
-                return false;
-
-            i--;
-            j--;
-        }
-
-        // Check upper-right diagonal
-        i = row - 1;
-        j = col + 1;
-
-        while(i >= 0 && j < n) {
-            if(board[i][j] == 'Q')
-                return false;
-
-            i--;
-            j++;
-        }
-
-        return true;
-    }
+    vector<vector<string>> ans;
 
     void solve(int row, int n,
                vector<string>& board,
-               vector<vector<string>>& ans) {
+               vector<int>& col,
+               vector<int>& diag1,
+               vector<int>& diag2) {
 
         // All queens placed
         if(row == n) {
@@ -47,32 +16,52 @@ public:
         }
 
         // Try every column
-        for(int col = 0; col < n; col++) {
+        for(int c = 0; c < n; c++) {
 
-            if(isSafe(board, row, col, n)) {
+            // Check if column or diagonal is occupied
+            if(col[c] == 1)
+                continue;
 
-                // Place queen
-                board[row][col] = 'Q';
+            if(diag1[row - c + n - 1] == 1)
+                continue;
 
-                // Move to next row
-                solve(row + 1, n, board, ans);
+            if(diag2[row + c] == 1)
+                continue;
 
-                // BACKTRACK
-                board[row][col] = '.';
-            }
+            // Place queen
+            board[row][c] = 'Q';
+
+            col[c] = 1;
+            diag1[row - c + n - 1] = 1;
+            diag2[row + c] = 1;
+
+            // Go to next row
+            solve(row + 1, n, board,
+                  col, diag1, diag2);
+
+            // Backtrack
+            board[row][c] = '.';
+
+            col[c] = 0;
+            diag1[row - c + n - 1] = 0;
+            diag2[row + c] = 0;
         }
     }
 
     vector<vector<string>> solveNQueens(int n) {
-
-        vector<vector<string>> ans;
 
         vector<string> board(
             n,
             string(n, '.')
         );
 
-        solve(0, n, board, ans);
+        vector<int> col(n, 0);
+
+        vector<int> diag1(2 * n - 1, 0);
+        vector<int> diag2(2 * n - 1, 0);
+
+        solve(0, n, board,
+              col, diag1, diag2);
 
         return ans;
     }
