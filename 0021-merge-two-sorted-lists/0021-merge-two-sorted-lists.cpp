@@ -2,6 +2,7 @@ class Solution {
 public:
     ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
         
+        
         // Dummy node to simplify handling of the head
         ListNode* dummy = new ListNode(-1);
         ListNode* curr = dummy;
