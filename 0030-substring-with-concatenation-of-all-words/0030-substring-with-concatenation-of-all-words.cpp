@@ -2,77 +2,75 @@ class Solution {
 public:
     vector<int> findSubstring(string s, vector<string>& words) {
 
-        vector<int> ans;
+        vector<int> answer;
 
         int wordLength = words[0].length();
         int totalWords = words.size();
         int totalLength = wordLength * totalWords;
 
-        if (s.length() < totalLength) {
-            return ans;
-        }
+        unordered_map<string, int> requiredWords;
 
-        // Required frequency
-        unordered_map<string, int> mp;
-
+        // Store required frequency of every word
         for (string word : words) {
-            mp[word]++;
+            requiredWords[word]++;
         }
 
-        // We need to check wordLength different starting positions
+        // Try every possible starting position
         for (int start = 0; start < wordLength; start++) {
 
             int left = start;
             int right = start;
 
-            int count = 0;
+            int wordsInWindow = 0;
 
-            unordered_map<string, int> temp;
+            unordered_map<string, int> currentWords;
 
             while (right + wordLength <= s.length()) {
 
-                string current = s.substr(right, wordLength);
+                // Take one word from the string
+                string currentWord = s.substr(right, wordLength);
                 right += wordLength;
 
-                // Current word doesn't exist
-                if (mp.find(current) == mp.end()) {
+                // If this word is not required
+                if (requiredWords.find(currentWord) == requiredWords.end()) {
 
-                    temp.clear();
-                    count = 0;
+                    currentWords.clear();
+                    wordsInWindow = 0;
                     left = right;
 
-                    continue;
                 }
+                else {
 
-                // Add current word
-                temp[current]++;
-                count++;
+                    currentWords[currentWord]++;
+                    wordsInWindow++;
 
-                // Too many occurrences of current word
-                while (temp[current] > mp[current]) {
+                    // Too many copies of this word
+                    while (currentWords[currentWord] >
+                           requiredWords[currentWord]) {
 
-                    string removeWord = s.substr(left, wordLength);
+                        string leftWord = s.substr(left, wordLength);
 
-                    temp[removeWord]--;
-                    left += wordLength;
-                    count--;
-                }
+                        currentWords[leftWord]--;
+                        left += wordLength;
+                        wordsInWindow--;
+                    }
 
-                // We have exactly all words
-                if (count == totalWords) {
+                    // We have exactly all required words
+                    if (wordsInWindow == totalWords) {
 
-                    ans.push_back(left);
+                        answer.push_back(left);
 
-                    // Move left pointer to look for next answer
-                    string removeWord = s.substr(left, wordLength);
+                        // Move left forward for the next possible answer
+                        string leftWord = s.substr(left, wordLength);
 
-                    temp[removeWord]--;
-                    left += wordLength;
-                    count--;
+                        currentWords[leftWord]--;
+                        left += wordLength;
+                        wordsInWindow--;
+                    }
                 }
             }
         }
 
-        return ans;
+        return answer;
     }
 };
