@@ -6,8 +6,16 @@ public:
 
         vector<int> ans;
 
-        for (int x : nums) {
-            ans.push_back(lower_bound(sorted.begin(), sorted.end(), x) - sorted.begin());
+        for (int i = 0; i < nums.size(); i++) {
+            int count = 0;
+
+            for (int j = 0; j < sorted.size(); j++) {
+                if (sorted[j] < nums[i]) {
+                    count++;
+                }
+            }
+
+            ans.push_back(count);
         }
 
         return ans;
